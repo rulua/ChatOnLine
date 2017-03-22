@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chat Home |Gigi</title>
+   <link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body{
+        margin-top: 30px;
+      }
+      .g{
+        color: #3369e8;
+        font-weight: bold;
+      }
+      .o{
+        color: #d50f25;
+        font-weight: bold;
+      }
+      .oo{
+        color: #eeb211;
+        font-weight: bold;
+      }
+      .l{
+        color: #009925;
+        font-weight: bold;
+      }
+      #messageArea{
+        display: none;
+      }
+      #chat{
+        max-height: 500px;
+        overflow: hidden;
+      }
+      .showname{
+        color: #6d0303;
+        font-size: 18px;
+        font-weight:bold;
+      }
+      @@media(max-width:768px) {
+     form input[type="submit"]{
+          width: 100%;
+          margin-top: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-12">
+          <h1><span class="g">C</span><span class="o">H</span><span class="l">A</span><span class="oo">T</span> OnLine</h1>
+        </div>
+      </div>
+      <div id="userFormArea" class="row">
+        <div class="col-md-12">
+          <form id="userForm" >
+            <div class="form-group">
+              <label>Enter UserName</label>
+              <input type="text" class="form-control" id="username">
+              <input type="submit"  class="btn btn-default" value="Login">
+            </div>
+          </form>
+        </div>
+      </div>
+      <div id="messageArea" class="row">
+        <div class="col-md-4">
+          <div class="well">
+            <h3>Online Users</h3>
+            <ul class="list-group" id="users">
+              <li class="list-group-item">Luru</li>
+              <li class="list-group-item">Luru</li>
+              <li class="list-group-item">Luru</li>
+              <li class="list-group-item">Luru</li>
+            </ul>
+          </div>
+        </div>
+        <div id="cd" class="col-md-8">
+          <div class="chat" id="chat">
+          </div>
+          <form id="messageForm" >
+            <div class="form-group">
+              <label>Enter Message</label>
+              <input type="text" class="form-control" id="message">
+              <input type="submit" class="btn btn-default" value="Send Message">
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+  $(function(){
+
+    var socket=io.connect()
+    var $messageForm=$('#messageForm');
+    var $message=$('#message');
+    var $chat=$('#chat');
+    var $userFormArea=$('#userFormArea');
+    var $userForm=$('#userForm');
+    var $users=$('#users');
+    var $username=$('#username');
+    $messageForm.submit(function(e){
+      e.preventDefault();
+      socket.emit('send message',$message.val());
+      $message.val('');
+    });
+
+    socket.on('new message',function(data){
+      $chat.prepend('<div class="well"><span class="showname">'+data.user+':  </span>'+data.msg +'---------------------'+new Date()+'+</div>');
+    });
+
+    $userForm.submit(function(e){
+
+      e.preventDefault();
+      socket.emit('new user',$username.val(),function(data){
+        if(data){
+          $userFormArea.hide();
+          $('#messageArea').show();
+        }
+      });
+      $message.val('');
+    });
+
+    socket.on('get users',function(data){
+  //  alert(data);
+     var html='';
+      for(i=0;i<data.length;i++){
+        html+='<li class="list-group-item">'+data[i]+'</li>'
+      }
+      $users.html(html);
+    });
+  });
+</script>
+  </body>
+</html>
