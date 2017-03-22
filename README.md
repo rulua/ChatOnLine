@@ -4,5 +4,5 @@ Chat Rome On Line
 vim package.json add this line:
 socket.io express
 # npm install
-# node server,js(In my project,this file named server.js)
+# node server.js(In my project,this file named server.js)
 
